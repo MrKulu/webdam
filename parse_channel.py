@@ -22,19 +22,26 @@ class Video:
 
 class Channel:
   """Youtube channel"""
-  def __init__(self,name,descripion,video_list):
+  def __init__(self,name,description,video_list):
     self.name = name
     self.desc = description
     self.videos = video_list
 
+class Result_parse:
+  """The results of the fonction parse_channel"""
+  def __init__(self):
+    self.playlists = {}
+    self.uploads = []
+    self.subs = []
 
 def parse_channel():
   
+  res = Result_parse()
+
   PRIVATE_PLAYLISTS = ["likes","favorites","watchHistory"]
-  playlists = {}
 
   for i in PRIVATE_PLAYLISTS:
-    playlists[i] = []
+    res.playlists[i] = []
 
   categories = {}
 
@@ -64,7 +71,40 @@ def parse_channel():
         categories[cat_id] = cat_id
       else:
         categories[cat_id] = tmp[0]["snippet"]["title"]
-    return categories[cat_id]      
+    return categories[cat_id]
+  # End Def category
+
+  def videosInPlaylist(playlist_id):
+    videos = []
+    next_page_token = ""
+    while next_page_token is not None:
+      playlistitems_response = youtube.playlistItems().list(
+        playlistId=playlist_id,
+        part="snippet",
+        maxResults=50,
+        pageToken=next_page_token
+        ).execute()
+      
+      for playlist_item in playlistitems_response["items"]:
+        video_id = playlist_item["snippet"]["resourceId"]["videoId"]
+        video_response = youtube.videos().list(
+          part="snippet",
+          id=video_id
+          ).execute()
+        if len(video_response["items"]) == 0:
+          break
+        videos += [Video(
+            video_response["items"][0]["snippet"]["title"],
+            video_id,
+            video_response["items"][0]["snippet"]["description"],
+            video_response["items"][0]["snippet"]["channelTitle"],
+            category(video_response["items"][0]["snippet"]["categoryId"]))]
+  
+      next_page_token = playlistitems_response.get("nextPageToken")
+    print playlistitems_response["pageInfo"]["totalResults"]
+    return videos
+  # End Def videosInPlaylist
+
 
   channels_response = youtube.channels().list(
     mine=True,
@@ -74,39 +114,32 @@ def parse_channel():
   # Parcours des playlists privées
   for play in PRIVATE_PLAYLISTS:
     for channel in channels_response["items"]:
-      uploads_list_id = channel["contentDetails"]["relatedPlaylists"][play]
-      
-      print "Videos in list %s" % play
-      
-      next_page_token = ""
-      while next_page_token is not None:
-        playlistitems_response = youtube.playlistItems().list(
-          playlistId=uploads_list_id,
-          part="snippet",
-          maxResults=50,
-          pageToken=next_page_token
-          ).execute()
-      
-        for playlist_item in playlistitems_response["items"]:
-          video_id = playlist_item["snippet"]["resourceId"]["videoId"]
-          video_response = youtube.videos().list(
-            part="snippet",
-            id=video_id
-            ).execute()
-          if len(video_response["items"]) == 0:
-            break
-          playlists[play] += [Video(
-              video_response["items"][0]["snippet"]["title"],
-              video_id,
-              video_response["items"][0]["snippet"]["description"],
-              video_response["items"][0]["snippet"]["channelTitle"],
-              category(video_response["items"][0]["snippet"]["categoryId"]))]
-          
-        
-        next_page_token = playlistitems_response.get("nextPageToken")
-    
-      print playlistitems_response["pageInfo"]["totalResults"]
+      list_id = channel["contentDetails"]["relatedPlaylists"][play]
+      print "Videos in list", play
+      res.playlists[play] = videosInPlaylist(list_id)
+  
+  # Parcours des vidéos uploadées
+  for channel in channels_response["items"]:
+    uploads_id = channel["contentDetails"]["relatedPlaylists"]["uploads"]
+    print "Videos uploaded"
+    res.uploads = videosInPlaylist(uploads_id)
 
-  return playlists
+  # Parcours des abonnements
+  subscriptions = youtube.subscriptions().list(
+    part="snippet",
+    mine=True).execute()["items"]
+  
+  for channel in subscriptions:
+    channelId = channel["snippet"]["resourceId"]["channelId"]
+    channel_content = youtube.channels().list(
+      part="contentDetails",
+      id=channelId).execute()["items"]
+    if len(channel_content) > 0:
+      res.subs += [Channel(
+          channel["snippet"]["title"],
+          channel["snippet"]["description"],
+          videosInPlaylist(channel_content[0]["contentDetails"]["relatedPlaylists"]["uploads"]))]
+  
+  return res
           
 parse_channel()
