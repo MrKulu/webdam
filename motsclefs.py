@@ -60,18 +60,29 @@ def tfidf(textes):
         resultat.append(tfidfs)
     return resultat
         
-            
-            
+def one_space(s):
+    a = s.replace("  "," ")
+    b = s
+    while(a != b):
+        b = a
+        a = a.replace("  "," ")
+    return a
+
+
 #texte : chaine
 #chaines_a_retirer : liste de chaines
 def simplifie(texte,chaines_a_retirer):
     texte2 = texte.lower()
+    texte2 = one_space(texte2)
     for x in separateurs:
         texte2 = texte2.replace(x,' ')
-    for x in chaines_a_retirer:
-        texte2 = texte2.replace(x,' ')
+    texte2 = one_space(texte2)
     for x in mots_a_retirer:
         texte2 = texte2.replace(x,' ')
+    texte2 = one_space(texte2)
+    for x in chaines_a_retirer:
+        texte2 = texte2.replace(x,' ')
+    texte2 = one_space(texte2)
     return texte2
 
 #texte : chaine
