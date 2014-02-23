@@ -99,33 +99,50 @@ def preparation(texte,chaines_a_retirer,n):
 
 
 #tfidfs : liste de dict chaine -> coeff
-def mots_frequents(tfidfs,n,seuil):
+def mots_pertinents(tfidfs,n):
     resultat = []
     for poids in tfidfs:
         mots = poids.items()
         mots.sort(lambda x,y:cmp(x[1],y[1]),None,True)
         resultat_partiel = []
         i = 0
-        if seuil:
-            while i<len(mots) and mots[i][1]>=n:
+        while i<len(mots) and len(resultat_partiel)<n:
+            p= mots[i][1]
+            while i<len(mots) and mots[i][1] == p:
                 resultat_partiel.append(mots[i][0])
                 i += 1
-        else:
-            while i<len(mots) and len(resultat_partiel)<n:
-                p= mots[i][1]
-                while i<len(mots) and mots[i][1] == p:
-                    resultat_partiel.append(mots[i][0])
-                    i += 1
         resultat.append(resultat_partiel)
     return resultat
 
-
-#textes : liste de listes de chaines
-def mots_clefs(textes,n,seuil):
-    tfs = []
-    if len(textes)==1:
-        tfs = tf(textes)
+#tfs : dict chaine -> coeff
+def mots_frequents(tfs,n,seuil):
+    resultat = []
+    mots = tfs.items()
+    mots.sort(lambda x,y:cmp(x[1],y[1]),None,True)
+    i = 0
+    if seuil:
+        while i<len(mots) and mots[i][1]>=(mots[0][1]*0.75):
+            resultat.append(mots[i][0])
+            i += 1
+        if len(resultat)>n:
+            resultat = []
     else:
-        tfs = tfidf(textes)
-    return mots_frequents(tfs,n,seuil)
+        while i<len(mots) and len(resultat)<n:
+            p = mots[i][1]
+            while i<len(mots) and mots[i][1] == p:
+                resultat.append(mots[i][0])
+                i += 1
+    return resultat
+
+
+
+#texte : liste de chaines
+def mots_clefs(texte,n,seuil):
+        tfs = tf([texte])[0]
+        return mots_frequents(tfs,n,seuil)
+
+#textes : liste de liste de chaines
+def mots_clefs_multiple(textes,n):
+    tfidfs = tfidf(textes)
+    return mots_pertinents(tfidfs,n)
 

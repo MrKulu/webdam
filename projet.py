@@ -9,7 +9,7 @@ import pickle
 #taille_groupe : taille des groupes de mots clefs voulus
 #n : nombre de groupes de mots clefs choisis par vidéo, parmis lesquels la sélection sera faite
 #p : nombre min de groupes de mots clefs voulus
-def mots_clefs_videos(videos,taille_groupes,n,seuil,resultats):
+def mots_clefs_videos(videos,taille_groupes,n,p,resultats):
     descriptions = []
     mots = []
     for v in videos:
@@ -17,17 +17,18 @@ def mots_clefs_videos(videos,taille_groupes,n,seuil,resultats):
         mots.extend(name)
         desc = preparation(v.desc.encode("utf8"),resultats,taille_groupes)
         descriptions.append(desc)
-    mots_clefs_descriptions = mots_clefs(descriptions,n,False)
+    mots_clefs_descriptions = mots_clefs_multiple(descriptions,n)
     for l in mots_clefs_descriptions:
         for m in l:
             mots.append(m)
     if taille_groupes == 1:
-        return resultats+mots_clefs([mots],seuil,True)[0]
+        return resultats+mots_clefs(mots,p,False)
     else:
-        return mots_clefs_videos(videos,taille_groupes - 1,n,seuil,resultats+mots_clefs([mots],seuil,True)[0])
+        return mots_clefs_videos(videos,taille_groupes - 1,n,p,resultats+mots_clefs(mots,p,True))
 
 file = open("result_MrKuluW","r")
 resultat_parse = pickle.load(file)
 print('fichier chargé')
-print mots_clefs_videos(resultat_parse.playlists["watchHistory"],3,4,0.001,[])
+print mots_clefs_videos(resultat_parse.playlists["watchHistory"],3,4,5,[])
+
 
