@@ -153,4 +153,4 @@ def parse_channel():
   store.close()
   return res
           
-parse_channel()
+#parse_channel()

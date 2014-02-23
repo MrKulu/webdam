@@ -4,7 +4,7 @@ import math
 
 separateurs = ".,;:/?!&\n\\\"\'()[]{}#-"
 
-mots_filtres = ['le','la','les','un','une','des','de','du','d','l','m','t','s','mais','ou','et','douc','or','ni','car','qui','que','quoi','dont','où','à','dans','par','pour','en','vers','avec','sans','sur','sous','entre','derrière','devant','en','je','tu','il','elle','nou','vous','ils','elles','son','sa','ses','mon','ma','mes','au','ton','ta','tes','notre','nos','votre','vos','leur','leurs','ai','as','a','avons','avez','ont','eu','suis','es','est','sommes','êtes','sont','été','plus','moins','moi','lui','toi','me','te','se','eux']
+mots_filtres = ['le','la','les','un','une','des','de','du','d','l','m','t','s','mais','ou','et','douc','or','ni','car','qui','que','quoi','dont','où','à','dans','par','pour','en','vers','avec','sans','sur','sous','entre','derrière','devant','en','je','tu','il','elle','nou','vous','ils','elles','son','sa','ses','mon','ma','mes','au','ton','ta','tes','notre','nos','votre','vos','leur','leurs','ai','as','a','avons','avez','ont','eu','suis','es','est','sommes','êtes','sont','été','plus','moins','moi','lui','toi','me','te','se','eux','and','by','http','https','www','com','youtube','to','of','the','for','you','on','in','it','is','with','this','my','from','your','are','if','how','org','can','out','one','will','that','user','video','watch','like','upload','was','but','now','have','our','there','some','all']
 
 def frequences_mots(mots):
     frequences = dict({})
@@ -66,7 +66,7 @@ def simplifie(texte):
     mots = texte2.split()
     mots2 = []
     for mot in mots:
-        if mot not in mots_filtres:
+        if mot not in mots_filtres and len(mot)>2:
             mots2.append(mot)
     return mots2
 
