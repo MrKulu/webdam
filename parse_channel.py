@@ -4,6 +4,7 @@
 import httplib2
 import os
 import sys
+import pickle
 
 from apiclient.discovery import build
 from oauth2client.file import Storage
@@ -125,21 +126,31 @@ def parse_channel():
     res.uploads = videosInPlaylist(uploads_id)
 
   # Parcours des abonnements
-  subscriptions = youtube.subscriptions().list(
-    part="snippet",
-    mine=True).execute()["items"]
+  next_page = ""
+  while next_page is not None:
+    subscriptions = youtube.subscriptions().list(
+      part="snippet",
+      mine=True,
+      pageToken=next_page,
+      maxResults=50).execute()
   
-  for channel in subscriptions:
-    channelId = channel["snippet"]["resourceId"]["channelId"]
-    channel_content = youtube.channels().list(
-      part="contentDetails",
-      id=channelId).execute()["items"]
-    if len(channel_content) > 0:
-      res.subs += [Channel(
-          channel["snippet"]["title"],
-          channel["snippet"]["description"],
-          videosInPlaylist(channel_content[0]["contentDetails"]["relatedPlaylists"]["uploads"]))]
+    for channel in subscriptions["items"]:
+      channelId = channel["snippet"]["resourceId"]["channelId"]
+      channel_content = youtube.channels().list(
+        part="contentDetails",
+        id=channelId).execute()["items"]
+      if len(channel_content) > 0:
+        res.subs += [Channel(
+            channel["snippet"]["title"],
+            channel["snippet"]["description"],
+            videosInPlaylist(channel_content[0]["contentDetails"]["relatedPlaylists"]["uploads"]))]
+      
+    next_page = subscriptions.get("nextPageToken")
   
+
+  store = open("result","w")
+  pickle.dump(res,store)
+  store.close()
   return res
           
 parse_channel()
