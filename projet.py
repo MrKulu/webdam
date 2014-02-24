@@ -33,9 +33,14 @@ if len(sys.argv) > 1:
 else:
     pp = 5
 
-print pp
+if len(sys.argv) > 2:
+    filename = sys.argv[2]
+else:
+    print "Begin parse_channel..."
+    parse_channel()
+    filename = "result"
 
-file = open("result_MrKuluW","r")
+file = open(filename,"r")
 resultat_parse = pickle.load(file)
 print('fichier chargé')
 print " ; ".join(mots_clefs_videos(resultat_parse.playlists["watchHistory"],3,4,pp,[]))
