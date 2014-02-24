@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
+
 from parse_channel import *
 from motsclefs import *
 import pickle
@@ -13,9 +15,9 @@ def mots_clefs_videos(videos,taille_groupes,n,p,resultats):
     descriptions = []
     mots = []
     for v in videos:
-        name = preparation(v.name.encode("utf8","ignore"),resultats,taille_groupes)
+        name = preparation(v.name,resultats,taille_groupes)
         mots.extend(name)
-        desc = preparation(v.desc.encode("utf8","ignore"),resultats,taille_groupes)
+        desc = preparation(v.desc,resultats,taille_groupes)
         descriptions.append(desc)
     mots_clefs_descriptions = mots_clefs_multiple(descriptions,n)
     for l in mots_clefs_descriptions:
