@@ -31,12 +31,12 @@ def mots_clefs_videos(videos,taille_groupes,n,p,resultats):
 file = open("result_MrKuluW","r")
 resultat_parse = pickle.load(file)
 print('fichier chargé')
-print mots_clefs_videos(resultat_parse.playlists["watchHistory"],3,4,5,[])
-print mots_clefs_videos(resultat_parse.playlists["likes"],3,4,5,[])
-print mots_clefs_videos(resultat_parse.playlists["favorites"],3,4,5,[])
+print " ; ".join(mots_clefs_videos(resultat_parse.playlists["watchHistory"],3,4,5,[]))
+print " ; ".join(mots_clefs_videos(resultat_parse.playlists["likes"],3,4,5,[]))
+print " ; ".join(mots_clefs_videos(resultat_parse.playlists["favorites"],3,4,5,[]))
 
 r = []
 for i in resultat_parse.subs:
     r += [Video("",""," ".join(mots_clefs_videos(i.videos,3,4,5,[])),"","")]
-print mots_clefs_videos(r,3,4,5,[])
+print " ; ".join(mots_clefs_videos(r,3,4,5,[]))
 
