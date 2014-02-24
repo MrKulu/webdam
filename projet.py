@@ -28,15 +28,26 @@ def mots_clefs_videos(videos,taille_groupes,n,p,resultats):
     else:
         return mots_clefs_videos(videos,taille_groupes - 1,n,p,resultats+mots_clefs(mots,p,True))
 
+if len(sys.argv) > 1:
+    pp = int(sys.argv[1])
+else:
+    pp = 5
+
+print pp
+
 file = open("result_MrKuluW","r")
 resultat_parse = pickle.load(file)
 print('fichier chargé')
-print " ; ".join(mots_clefs_videos(resultat_parse.playlists["watchHistory"],3,4,5,[]))
-print " ; ".join(mots_clefs_videos(resultat_parse.playlists["likes"],3,4,5,[]))
-print " ; ".join(mots_clefs_videos(resultat_parse.playlists["favorites"],3,4,5,[]))
+print " ; ".join(mots_clefs_videos(resultat_parse.playlists["watchHistory"],3,4,pp,[]))
+print " ; ".join(mots_clefs_videos(resultat_parse.playlists["likes"],3,4,pp,[]))
+print " ; ".join(mots_clefs_videos(resultat_parse.playlists["favorites"],3,4,pp,[]))
 
 r = []
 for i in resultat_parse.subs:
-    r += [Video("",""," ".join(mots_clefs_videos(i.videos,3,4,5,[])),"","")]
-print " ; ".join(mots_clefs_videos(r,3,4,5,[]))
+    r += [Video("",""," ".join(mots_clefs_videos(i.videos,3,4,pp,[])),"","")]
+print " ; ".join(mots_clefs_videos(r,3,4,pp,[]))
 
+print entropie_vids(resultat_parse.playlists["watchHistory"])
+print entropie_vids(resultat_parse.playlists["likes"])
+print entropie_vids(resultat_parse.playlists["favorites"])
+print entropie_vids(r)

@@ -158,3 +158,17 @@ def mots_clefs_multiple(textes,n):
     tfidfs = tfidf(textes)
     return mots_pertinents(tfidfs,n)
 
+def entropie(texte):
+    f = frequences_mots(texte.split())
+    h = 0
+    for i in f.keys():
+        e = 1/((1/f[i])-1)
+        h += -(e*math.log(e,2))
+    print len(f.keys())
+    return h
+
+def entropie_vids(vid):
+    t = ""
+    for v in vid:
+        t += v.name + v.desc
+    return(entropie(t))
