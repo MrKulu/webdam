@@ -42,17 +42,23 @@ else:
 
 file = open(filename,"r")
 resultat_parse = pickle.load(file)
-print('fichier chargé')
+print 'Fichier chargé'
+print 'Historique :' 
 print " ; ".join(mots_clefs_videos(resultat_parse.playlists["watchHistory"],3,4,pp,[]))
+print '(entropie :'+str(entropie_vids(resultat_parse.playlists["watchHistory"]))+')'
+
+print '\nLikes :'
 print " ; ".join(mots_clefs_videos(resultat_parse.playlists["likes"],3,4,pp,[]))
+print '(entropie :'+str(entropie_vids(resultat_parse.playlists["likes"]))+')'
+
+print '\nFavoris :'
 print " ; ".join(mots_clefs_videos(resultat_parse.playlists["favorites"],3,4,pp,[]))
+print '(entropie :'+str(entropie_vids(resultat_parse.playlists["favorites"]))+')'
 
 r = []
 for i in resultat_parse.subs:
     r += [Video("",""," ".join(mots_clefs_videos(i.videos,3,4,pp,[])),"","")]
+print '\nAbonnements :'
 print " ; ".join(mots_clefs_videos(r,3,4,pp,[]))
+print '(entropie :'+str(entropie_vids(r))+')'
 
-print entropie_vids(resultat_parse.playlists["watchHistory"])
-print entropie_vids(resultat_parse.playlists["likes"])
-print entropie_vids(resultat_parse.playlists["favorites"])
-print entropie_vids(r)

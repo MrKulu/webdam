@@ -164,7 +164,6 @@ def entropie(texte):
     for i in f.keys():
         e = 1/((1/f[i])-1)
         h += -(e*math.log(e,2))
-    print len(f.keys())
     return h
 
 def entropie_vids(vid):
